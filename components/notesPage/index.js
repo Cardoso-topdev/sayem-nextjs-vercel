@@ -16,7 +16,7 @@ import NotesIcon from '@material-ui/icons/Notes';
 import BioHeader from "../bioheader";
 import { UserStateContext } from "../../context/UserContext";
 import * as APIService from "../../services/apis"
-
+import { parseCookies} from 'nookies'
 const useStyles = makeStyles((theme) => ({
   link: {
     display: 'flex',
@@ -43,8 +43,13 @@ const NotesPage = ({ filteredPages, fetchedBlocks, err, userData }) => {
       </Notice>
     );
   }
-  const state = useContext(UserStateContext);
-  const _token = state.token;
+  // const state = useContext(UserStateContext);
+  // const token = state.token;
+  // const userId = state.userId;
+  const {token, userId} = parseCookies()
+
+  let bEditable = userId == userData._id;
+
   const initialPages = filteredPages || [];
   const [cards, setCards] = useState(initialPages.map((data) => data.page));
   const [showInbox, setShowInbox] = useState(true)
@@ -56,11 +61,12 @@ const NotesPage = ({ filteredPages, fetchedBlocks, err, userData }) => {
   const classes = useStyles();
   const prevBlocks = usePrevious(blocks);
 
+
   // Update the database whenever blocks change
   useEffect(() => {
     const updatePageOnServer = async (blocks) => {
       try {
-        await APIService.PageInfo(userData._id, _token, "PUT", JSON.stringify({
+        await APIService.PageInfo(userData._id, token, "PUT", JSON.stringify({
           blocks: blocks,
         }))
       } catch (err) {
@@ -157,7 +163,7 @@ const NotesPage = ({ filteredPages, fetchedBlocks, err, userData }) => {
           );
         })}
       </div>
-      <Button href="/">Add a note</Button>
+      {bEditable && <Button href="/">Add a note</Button>}
     </>
   );
 };

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import cookies from "next-cookies";
 
 import Notice from "../components/notice";
 import Input from "../components/input";
@@ -99,13 +98,14 @@ const ResetPasswordPage = () => {
 };
 
 export const getServerSideProps = (context) => {
-  const { token } = cookies(context);
+  const myCookies = nookies.get(context)
+  const { token } = myCookies;
   const res = context.res;
   if (token) {
     res.writeHead(302, { Location: `/pages` });
     res.end();
   }
-  return { props: {} };
+  return { props: {token} };
 };
 
 export default ResetPasswordPage;

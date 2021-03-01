@@ -1,5 +1,4 @@
 import Notice from "../components/notice";
-import cookies from "next-cookies";
 import * as APIService from "../services/apis"
 
 const ActivateAccountPage = ({ activated, message }) => {
@@ -14,9 +13,8 @@ const ActivateAccountPage = ({ activated, message }) => {
 };
 
 export const getServerSideProps = async (context) => {
-  const req = context.req;
-  const { token } = cookies(context);
-
+  const myCookies = nookies.get(context)
+  const { token } = myCookies;
   try {
     const activationToken = context.query.token;
     if (!activationToken) {

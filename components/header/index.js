@@ -2,8 +2,56 @@ import styles from "./styles.module.scss";
 import Button from "../button";
 import ContextMenu from "../contextMenu";
 import UserIcon from "../../images/user.svg";
+import { useGoogleLogout } from 'react-google-login';
+import { parseCookies, destroyCookie} from 'nookies'
+import { useContext } from "react";
+import { UserDispatchContext, UserStateContext } from "../../context/UserContext";
+import { useRouter } from "next/router";
+import * as APIService from "../../services/apis";
+import * as MyCookies from "../../services/manage_cookie";
 
-const Header = ({isLoginPage, isAuth, userId, userName, isContextMenuOpen, toggleContextMenu, handleNavigation, closeContextMenu}) => {
+const Header = ({isLoginPage, isContextMenuOpen, toggleContextMenu, handleNavigation, closeContextMenu}) => {
+  const clientId = '604163155271-2adbld36tbrooc5ssu1gs52gs55gl8s7.apps.googleusercontent.com';
+  const dispatch = useContext(UserDispatchContext);
+  // const {token, userName} = useContext(UserStateContext);
+  const {token, userName, userId} = parseCookies()
+  console.log("Header: ", userName);
+  const router = useRouter();
+
+  const onFailure = () => {
+    console.log('Handle failure cases');
+    router.push("/login");
+  };
+ 
+  const onLogoutSuccess = (res) => {
+    router.push("/login");
+  };
+
+  const { signOut } = useGoogleLogout({
+    clientId,
+    onLogoutSuccess,
+    onFailure,
+  });
+
+  const logout = async () => {
+    try{
+      await APIService.Logout(token);
+
+      MyCookies.ClearCookies(userId);
+
+      // dispatch({ type: "LOGOUT"});
+      const auth2 = window.gapi.auth2.getAuthInstance()
+      if (auth2 != null) {
+        auth2.signOut().then(
+          auth2.disconnect().then(onLogoutSuccess)
+        )
+      }
+
+      // signOut();
+    } catch ( err) {
+      console.log("LOGOUT ERROR", err)
+    }
+  }
   return (
     <header className={styles.headerBar}>
       <div className={styles.logo}>
@@ -12,20 +60,20 @@ const Header = ({isLoginPage, isAuth, userId, userName, isContextMenuOpen, toggl
         </a>
       </div>
       <nav className={styles.nav}>
-        {!isLoginPage && !isAuth  && <Button href="/login">Login</Button>}
-        {!isLoginPage && isAuth  && (
+        {!isLoginPage && (!token)  && <Button href="/login">Login</Button>}
+        {!isLoginPage && token  && 
           <div className={styles.user}>
             <p>{userName}</p>
             <span
               role="button"
               tabIndex="0"
-              onClick={() => toggleContextMenu()}
+              onClick={toggleContextMenu}
             >
               <img src={UserIcon} alt="User Icon" />
             </span>
           </div>
-        )}
-        {!isLoginPage && isAuth && isContextMenuOpen && (
+        }
+        {!isLoginPage && token && isContextMenuOpen && (
           <ContextMenu
             menuItems={[
               {
@@ -39,9 +87,9 @@ const Header = ({isLoginPage, isAuth, userId, userName, isContextMenuOpen, toggl
                 action: () => handleNavigation("/account"),
               },
               {
-                id: "logout",
+                id: "signout",
                 label: "Logout",
-                action: () => handleNavigation("/logout"),
+                action: logout,
               },
             ]}
             closeAction={() => closeContextMenu()}
@@ -54,7 +102,3 @@ const Header = ({isLoginPage, isAuth, userId, userName, isContextMenuOpen, toggl
 };
 
 export default Header;
-
-
-
-   

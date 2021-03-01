@@ -3,12 +3,14 @@ import { UserStateContext } from "../../context/UserContext";
 import styles from "./styles.module.scss";
 import CloseIcon from "../../images/close.svg";
 import * as APIService from "../../services/apis"
+import { parseCookies} from 'nookies'
 
 const BioHeader = ({ userData, style, dismissible }) => {
 
-  const state = useContext(UserStateContext);
-  const userId = state.userId;
-  const _token = state.token;
+  // const state = useContext(UserStateContext);
+  // const userId = state.userId;
+
+  const {token, userId} = parseCookies()
 
   const [isVisible, setIsVisible] = useState(true);
   const [bioText, setBioText] = useState(userData.bio);
@@ -20,15 +22,21 @@ const BioHeader = ({ userData, style, dismissible }) => {
 
   console.log(userId, userData._id);
   const saveBioText = async () => {
-    await APIService.SaveBioText(_token, JSON.stringify({
-      bioText: bioText,
-    }));
-    setNewBioText(bioText)
+    try {
+      await APIService.SaveBioText(JSON.stringify({
+        bioText: bioText,
+        userId: userId
+      }));
+      setNewBioText(bioText)
+    } catch (err) {
+      console.log(err)
+    }
   }
   const followUser = async () => {
     try {
-      const response = await APIService.UserFollow(_token, JSON.stringify({
+      const response = await APIService.UserFollow(JSON.stringify({
         followerId: userId,
+        userId:  userData._id
       }));
 
       const resFollow = await response.json();

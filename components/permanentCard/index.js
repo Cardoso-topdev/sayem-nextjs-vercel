@@ -2,7 +2,7 @@ import { useState, useContext } from "react";
 import { useRouter } from "next/router";
 import { UserStateContext } from "../../context/UserContext";
 import DOMPurify from "isomorphic-dompurify";
-
+import { parseCookies} from 'nookies'
 import ContextMenu from "../contextMenu";
 import styles from "./styles.module.scss";
 import MoreIcon from "../../images/more.svg";
@@ -26,8 +26,10 @@ const PermanentCard = ({ pageId, date, content, deleteCard, userData }) => {
   const router = useRouter();
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
 
-  const state = useContext(UserStateContext);
-  const userId = state.userId;
+  // const state = useContext(UserStateContext);
+  // const userId = state.userId;
+  const {token, userId} = parseCookies()
+
   let bEditable = userId == userData._id;
   // In the card preview, we only want to show textual content
   const textContent = content.filter((block) => block.tag !== "img");

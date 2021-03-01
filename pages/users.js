@@ -1,14 +1,16 @@
 import Notice from "../components/notice";
 import UserCard from "../components/userCard";
-import cookies from "next-cookies";
+import nookies from 'nookies'
 import * as APIService from "../services/apis"
 
 const UsersPage = ({ users }) => {
   // console.log(users);
   let usersList = [];
-  Object.entries(users).forEach(([key, value]) => {
-    usersList.push(<UserCard key={key} _id={value._id} email={value.email} bio={value.bio} name={value.name}/>);
-  });
+  if ( users){
+    Object.entries(users).forEach(([key, value]) => {
+      usersList.push(<UserCard key={key} _id={value._id} email={value.email} bio={value.bio} name={value.name}/>);
+    });
+  }
   return (
     <div>
       {usersList}
@@ -17,16 +19,20 @@ const UsersPage = ({ users }) => {
 };
 
 export const getServerSideProps = async (context) => {
-  const req = context.req;
-  const { token } = cookies(context);
+  const myCookies = nookies.get(context)
+  const { token } = myCookies;
+  
   try {
-    const res = await APIService.GetUserList(token);
-    const data = await res.json()
-    if (data.errCode) {
-      throw new Error(data.message);
-    } else {
-      return { props: { users: data } };
+    if ( token ){
+      const res = await APIService.GetUserList(token);
+      const data = await res.json()
+      if (data.errCode) {
+        throw new Error(data.message);
+      } else {
+        return { props: { users: data, token } };
+      }
     }
+    return {props: {}}
   } catch (err) {
     console.log(err);
     return {

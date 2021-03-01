@@ -11,7 +11,6 @@ import Divider from '@material-ui/core/Divider';
 import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 import AddIcon from '@material-ui/icons/Add';
 import * as APIService from "../../services/apis"
-import cookies from "next-cookies";
 const CMD_KEY = "/";
 
 // library does not work with hooks
@@ -144,17 +143,21 @@ class InboxEditableBlock extends React.Component {
   }
 
   async getMetaData(url) {
-    const response = await APIService.PagesUrl(this.props.token, JSON.stringify({
-      url: url,
-    }), "PUT")
-    const data = await response.json().then();
-    let settitle = data.title.length < 125 ? data.title : data.title.substring(0, 100) + "...";
-    this.setState({
-      displayText: settitle,
-      hostname: data.hostname,
-      protocol: data.protocol,
-      pathname: data.pathname,
-    });
+    try {
+      const response = await APIService.PagesUrl(this.props.token, JSON.stringify({
+        url: url,
+      }), "PUT")
+      const data = await response.json().then();
+      let settitle = data.title.length < 125 ? data.title : data.title.substring(0, 100) + "...";
+      this.setState({
+        displayText: settitle,
+        hostname: data.hostname,
+        protocol: data.protocol,
+        pathname: data.pathname,
+      });
+    } catch ( err ) {
+      console.log(err);
+    }
   }
 
   handleChange(e) {
@@ -563,10 +566,10 @@ class InboxEditableBlock extends React.Component {
 }
 
 export const getServerSideProps = async (context) => {
-  const { token } = cookies(context);
-
+  const myCookies = nookies.get(context)
+  const { token } = myCookies;
   return {
-    props: { token:token}
+    props: { token }
   };
 };
 export default InboxEditableBlock;

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import cookies from "next-cookies";
-
+import nookies from 'nookies';
+import * as APIService from "../services/apis";
 import Notice from "../components/notice";
 import Input from "../components/input";
 
@@ -21,7 +21,7 @@ const form = {
   },
 };
 
-const ForgotPasswordPage = () => {
+const ForgotPasswordPage = ({token}) => {
   const RESET_NOTICE = { type: "", message: "" };
   const [notice, setNotice] = useState(RESET_NOTICE);
 
@@ -37,17 +37,9 @@ const ForgotPasswordPage = () => {
     e.preventDefault();
     setNotice(RESET_NOTICE);
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API}/users/resetToken`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: formData.email,
-          }),
-        }
-      );
+      const response = await APIService.ResetToken(token, JSON.stringify({
+        email: formData.email,
+      }) )
       const data = await response.json();
       if (data.errCode) {
         setNotice({ type: "ERROR", message: data.message });
@@ -90,13 +82,14 @@ const ForgotPasswordPage = () => {
 };
 
 export const getServerSideProps = (context) => {
-  const { token } = cookies(context);
+  const myCookies = nookies.get(context)
+  const { token } = myCookies;
   const res = context.res;
   if (token) {
     res.writeHead(302, { Location: `/pages` });
     res.end();
   }
-  return { props: {} };
+  return { props: {token} };
 };
 
 export default ForgotPasswordPage;

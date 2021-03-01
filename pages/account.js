@@ -1,5 +1,4 @@
 import { useState } from "react";
-import cookies from "next-cookies";
 
 import Input from "../components/input";
 import Notice from "../components/notice";
@@ -101,9 +100,9 @@ const AccountPage = ({ user }) => {
 };
 
 export const getServerSideProps = async (context) => {
-  const { token } = cookies(context);
+  const myCookies = nookies.get(context)
+  const { token } = myCookies;
   const res = context.res;
-  const req = context.req;
 
   if (!token) {
     res.writeHead(302, { Location: `/login` });

@@ -24,7 +24,7 @@ const ActionMenuInbox = ({ position, actions }) => {
           className={styles.menuItem}
           role="button"
           tabIndex="0"
-          onClick={() => actions.turnInto()}
+          onClick={actions.turnInto}
         >
           Add to reading list
         </span>
@@ -36,7 +36,7 @@ const ActionMenuInbox = ({ position, actions }) => {
         <DeleteIcon 
           id="delete"
           className={styles.archiveItem}
-          onClick={() => actions.deleteBlock()}
+          onClick={actions.deleteBlock}
         />
         
       </div>

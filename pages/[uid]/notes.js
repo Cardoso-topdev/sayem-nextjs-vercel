@@ -1,5 +1,5 @@
 import { resetServerContext } from "react-beautiful-dnd";
-import cookies from "next-cookies";
+import nookies from 'nookies'
 import * as APIService from "../../services/apis"
 import NotesPage from "../../components/notesPage/index";
 
@@ -18,10 +18,11 @@ const IndexPage = ({
 };
 
 export const getServerSideProps = async (context) => {
+  const myCookies = nookies.get(context)
+  const { token } = myCookies;
+
   resetServerContext(); // needed for drag and drop functionality
-  const { token } = cookies(context);
   const uid = context.query.uid;
-  const req = context.req;
   try {
     const response = await APIService.GetUserAccount(uid, token)
     const data = await response.json();

@@ -1,17 +1,15 @@
 import { useState, useContext } from "react";
 import { useRouter } from "next/router";
-import cookies from "next-cookies";
 
 import { UserDispatchContext } from "../context/UserContext";
 import Notice from "../components/notice";
 import Input from "../components/input";
-import AuthProviderList from "../components/AuthProviderList";
-// import authentication from '../../services/authentication';
-import GoogleLogin from 'react-google-login';
 import { useGoogleLogin } from 'react-google-login';
 import TwitterLogin from "react-twitter-login";
 import { Box, ButtonGroup, Button } from "@material-ui/core"
 import { Google as GoogleIcon } from "mdi-material-ui";
+import * as MyCookies from "../services/manage_cookie"
+import * as APIService from "../services/apis"
 
 const form = {
   id: "login",
@@ -60,7 +58,7 @@ const LoginPage = () => {
   };
 
   const clientId =
-  '89981139684-5h2uvgps27q8couh86pcffl6vrcve3kb.apps.googleusercontent.com';
+  '604163155271-2adbld36tbrooc5ssu1gs52gs55gl8s7.apps.googleusercontent.com';
 
   const onFailure = (res) => {
     console.log('Login failed: res:', res);
@@ -70,24 +68,22 @@ const LoginPage = () => {
   };
 
   const onSuccess = async res => {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API}/users/googlogin`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: res.profileObj.email,
-          uid: res.profileObj.googleId,
-        }),
-      }
-    );
+    const response = await APIService.Googlogin("POST",JSON.stringify({
+      email: res.profileObj.email,
+      uid: res.profileObj.googleId,
+      name: res.profileObj.name
+    }) )
     const data = await response.json();
 
     if (data.errCode) {
       setNotice({ type: "ERROR", message: data.message });
     } else {
-      dispatch({ type: "LOGIN", userId: data.userId });
+      dispatch({ 
+        type: "LOGIN", 
+        token: data.token,
+        userName: data.userName,
+        userId: data.userId });
+      MyCookies.setCookieWithPath(data, "/" + data.userId);
 
       router.push("/" + data.userId); //redirect to [user_id] page
     }
@@ -106,31 +102,26 @@ const LoginPage = () => {
     setNotice(RESET_NOTICE);
    
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API}/users/login`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: formData.email,
-            password: formData.password,
-          }),
-        }
-      );
+      const response = await APIService.Login(JSON.stringify({
+        email: formData.email,
+        password: formData.password,
+      }) )
       
       const data = await response.json();
       if (data.errCode) {
         setNotice({ type: "ERROR", message: data.message });
       } else {
-        dispatch({ type: "LOGIN", userId: data.userId, userName: data.userName });
-        // router.push("/pages");
+        dispatch({ 
+          type: "LOGIN", 
+          token: token,
+          userId: data.userId, 
+          userName: data.userName });
+        MyCookies.setCookieWithPath(data, "/" + data.userId);
         router.push("/" + data.userId);
       }
     } catch (err) {
       console.log(err);
       setNotice({ type: "ERROR", message: "Something unexpected happened." });
-      dispatch({ type: "LOGOUT" });
     }
   };
 
@@ -178,7 +169,7 @@ const LoginPage = () => {
             <Button
               key={"google.com"}
               startIcon={<GoogleIcon/>}
-              onClick={() => signIn()}
+              onClick={signIn}
             >
               {"Sign in with Google"}
             </Button>
@@ -201,16 +192,6 @@ const LoginPage = () => {
       </p>
     </div>
   );
-};
-
-export const getServerSideProps = (context) => {
-  const { token } = cookies(context);
-  const res = context.res;
-  if (token) {
-    res.writeHead(302, { Location: `/login` });
-    res.end();
-  }
-  return { props: {} };
 };
 
 export default LoginPage;

@@ -10,13 +10,8 @@ import Header from "../header";
 
 const Layout = ({ children }) => {
   const router = useRouter();
-  const state = useContext(UserStateContext);
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
-
   const isLoginPage = router.pathname === "/login";
-  const isAuth = state.isAuth;
-  const userId = state.userId;
-  const userName = state.userName;
 
   const toggleContextMenu = () => {
     setIsContextMenuOpen(!isContextMenuOpen);
@@ -40,9 +35,6 @@ const Layout = ({ children }) => {
       </Head>
       <Header 
           isLoginPage={isLoginPage}
-          isAuth={isAuth}
-          userId={userId}
-          userName={userName}
           isContextMenuOpen={isContextMenuOpen}
           toggleContextMenu={toggleContextMenu} 
           handleNavigation={handleNavigation} 

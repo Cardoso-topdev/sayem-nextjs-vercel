@@ -1,10 +1,11 @@
 import { useState, useContext } from "react";
 import { useRouter } from "next/router";
-import cookies from "next-cookies";
-
+import nookies from 'nookies'
+import * as MyCookies from "../services/manage_cookie"
 import { UserDispatchContext } from "../context/UserContext";
 import Input from "../components/input";
 import Notice from "../components/notice";
+import * as APIService from "../services/apis"
 
 const form = {
   id: "signup",
@@ -62,25 +63,24 @@ const SignupPage = () => {
     e.preventDefault();
     setNotice(RESET_NOTICE);
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API}/users/signup`,
-        {
-          method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: formData.name,
-            email: formData.email,
-            password: formData.password,
-            bio: formData.bio,
-          }),
-        }
-      );
+      const response = await APIService.UserSignUp(
+        "POST", JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          bio: formData.bio,
+        })
+      )
       const data = await response.json();
       if (data.errCode) {
         setNotice({ type: "ERROR", message: data.message });
       } else {
-        dispatch({ type: "LOGIN", userId: data.userId });
+        dispatch({ 
+          type: "LOGIN", 
+          token: data.token, 
+          userName: data.userName, 
+          userId: data.userId });
+        MyCookies.setCookieWithPath(data, "/" + data.userId);
         setNotice({
           type: "SUCCESS",
           message:
@@ -91,7 +91,6 @@ const SignupPage = () => {
     } catch (err) {
       console.log(err);
       setNotice({ type: "ERROR", message: "Something unexpected happened." });
-      dispatch({ type: "LOGOUT" });
     }
   };
 
@@ -126,13 +125,15 @@ const SignupPage = () => {
 };
 
 export const getServerSideProps = (context) => {
-  const { token } = cookies(context);
+  const myCookies = nookies.get(context)
+  const { token } = myCookies;
+
   const res = context.res;
   if (token) {
     res.writeHead(302, { Location: `/account` });
     res.end();
   }
-  return { props: {} };
+  return { props: {token} };
 };
 
 export default SignupPage;
