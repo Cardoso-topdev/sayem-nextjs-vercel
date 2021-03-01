@@ -58,7 +58,7 @@ const LoginPage = () => {
   };
 
   const clientId =
-  '604163155271-s7fbkk86o6lscguutpl8k7632fk6c1uq.apps.googleusercontent.com';
+  '936739740327-ktpi3gj57iqf7j2se7b2dhuno0vvq1c4.apps.googleusercontent.com';
 
   const onFailure = (res) => {
     console.log('Login failed: res:', res);
