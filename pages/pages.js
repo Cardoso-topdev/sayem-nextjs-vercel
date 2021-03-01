@@ -1,18 +1,16 @@
 import { useState, useContext } from "react";
-import cookies from "next-cookies";
+import nookies from 'nookies'
 
 import Card from "../components/card";
 import Button from "../components/button";
 import Notice from "../components/notice";
 import { UserStateContext } from "../context/UserContext";
 import * as APIService from "../services/apis"
+import nookies from 'nookies'
 
 const PagesPage = ({ pages }) => {
   const initialPages = pages || [];
   const [cards, setCards] = useState(initialPages.map((data) => data.page));
-
-  const state = useContext(UserStateContext);
-  const _token = state.token;
 
   const deleteCard = async (pageId) => {
     try {
@@ -57,9 +55,10 @@ const PagesPage = ({ pages }) => {
 };
 
 export const getServerSideProps = async (context) => {
-  const { token } = cookies(context);
+  const myCookies = nookies.get(context)
+  const { token } = myCookies;
+
   const res = context.res;
-  const req = context.req;
 
   if (!token) {
     res.writeHead(302, { Location: `/login` });

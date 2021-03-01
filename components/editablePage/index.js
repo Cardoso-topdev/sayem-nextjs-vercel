@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/router";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
+import { parseCookies} from 'nookies'
 import { UserStateContext } from "../../context/UserContext";
 import EditableBlock from "../editableBlock";
 import Notice from "../notice";
@@ -17,9 +18,9 @@ const EditablePage = ({ id, creatorid, fetchedBlocks, err }) => {
       </Notice>
     );
   }
-  const state = useContext(UserStateContext);
-  const _token = state.token;
-  const userId = state.userId;
+  // const state = useContext(UserStateContext);
+  // const token = state.token;
+  const {token, userId} = parseCookies()
 
   const router = useRouter();
   const [blocks, setBlocks] = useState(fetchedBlocks);
@@ -31,7 +32,7 @@ const EditablePage = ({ id, creatorid, fetchedBlocks, err }) => {
   useEffect(() => {
     const updatePageOnServer = async (blocks) => {
       try {
-        await APIService.PageInfo(id, _token, JSON.stringify({
+        await APIService.PageInfo(id, token, JSON.stringify({
           blocks: blocks,
         }), "PUT")
       } catch (err) {
@@ -74,7 +75,7 @@ const EditablePage = ({ id, creatorid, fetchedBlocks, err }) => {
     // The imageUrl contains images/name.jpg, hence we do not need
     // to explicitly add the /images endpoint in the API url
     try {
-      const response = await APIService.PageInfo(imageUrl, _token, "DELETE");
+      const response = await APIService.PageInfo(imageUrl, token, "DELETE");
       await response.json();
     } catch (err) {
       console.log(err);

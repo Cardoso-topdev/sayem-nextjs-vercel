@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { useRouter } from "next/router";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import Button from "../button";
@@ -17,7 +17,7 @@ import NotesIcon from '@material-ui/icons/Notes';
 import BioHeader from "../bioheader";
 import { UserStateContext } from "../../context/UserContext";
 import * as APIService from "../../services/apis"
-
+import { parseCookies} from 'nookies'
 const useStyles = makeStyles((theme) => ({
   link: {
     display: 'flex',
@@ -49,8 +49,13 @@ const ReadingListsPage = ({
       </Notice>
     );
   }
-  const state = useContext(UserStateContext);
-  const _token = state.token;
+  // const state = useContext(UserStateContext);
+  // const token = state.token;
+  // const userId = state.userId;
+
+  const {token, userId} = parseCookies()
+
+  let bEditable = userId == userData._id;
 
   const initialPages = filteredPages || [];
   permanentPages = permanentPages || [];
@@ -73,7 +78,7 @@ const ReadingListsPage = ({
 
   const deleteCard = async (pageId) => {
     try {
-      await APIService.PageInfo(pageId, _token, "DELETE")
+      await APIService.PageInfo(pageId, token, "DELETE")
       const cardIndex = cards.map((page) => page._id).indexOf(pageId);
       const updatedCards = [...cards];
       updatedCards.splice(cardIndex, 1);
@@ -86,7 +91,7 @@ const ReadingListsPage = ({
   const createCard = async () => {
     try {
       const blocks = [{ tag: "h1", html: "New Playlist", imageUrl: "" }];
-      const response = await APIService.PagesPostPage(_token, JSON.stringify({
+      const response = await APIService.PagesPostPage(token, JSON.stringify({
         blocks: blocks,
       }), "POST")
       const data = await response.json()
@@ -172,7 +177,7 @@ const ReadingListsPage = ({
         })}
         
       </div>
-      <Button onClickHandler={() => createCard()}>Create New Playlist </Button>
+      {bEditable && <Button onClickHandler={() => createCard()}>Create New Playlist </Button>}
     </>
   );
 };

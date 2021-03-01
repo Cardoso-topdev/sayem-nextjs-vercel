@@ -19,7 +19,7 @@ import ContentEditable from "react-contenteditable";
 import styles from "./styles.module.scss";
 import { UserStateContext } from "../../context/UserContext";
 import * as APIService from "../../services/apis"
-
+import { parseCookies} from 'nookies'
 const useStyles = makeStyles((theme) => ({
   link: {
     display: 'flex',
@@ -48,8 +48,9 @@ const InboxPage = ({  pageIdList,
       </Notice>
     );
   }
-  const state = useContext(UserStateContext);
-  const _token = state.token;
+  // const state = useContext(UserStateContext);
+  // const token = state.token;
+  const {token, userId} = parseCookies()
 
   const initialPages = filteredPages || [];
   const [cards, setCards] = useState(initialPages.map((data) => data.page));
@@ -68,7 +69,7 @@ const InboxPage = ({  pageIdList,
   useEffect(() => {
     const updatePageOnServer = async (blocks) => {
       try {
-        await APIService.UserAccountInbox(_token, "PUT", JSON.stringify({
+        await APIService.UserAccountInbox(token, "PUT", JSON.stringify({
           blocks: blocks,
         }))
       } catch (err) {
@@ -111,7 +112,7 @@ const InboxPage = ({  pageIdList,
     // The imageUrl contains images/name.jpg, hence we do not need
     // to explicitly add the /images endpoint in the API url
     try {
-      const response = await APIService.PageInfo(imageUrl, _token, "DELETE")
+      const response = await APIService.PageInfo(imageUrl, token, "DELETE")
       await response.json();
     } catch (err) {
       console.log(err);

@@ -1,5 +1,5 @@
-import { useState, useContext } from "react";
-import cookies from "next-cookies";
+import { useState } from "react";
+import nookies from 'nookies'
 import Card from "../components/card";
 import Button from "../components/button";
 import Notice from "../components/notice";
@@ -13,7 +13,6 @@ import EditablePage from "../components/editablePage/index";
 import InboxPage from "../components/inboxPage/index";
 import { useRouter } from "next/router";
 import { resetServerContext } from "react-beautiful-dnd";
-import { UserStateContext } from "../context/UserContext";
 import * as APIService from "../services/apis"
 
 const PagesPage = ({ profileid, pages, inbox, pid, creatorid, blocks }) => {
@@ -26,8 +25,6 @@ const PagesPage = ({ profileid, pages, inbox, pid, creatorid, blocks }) => {
   const classes = useStyles();
   const router = useRouter();
 
-  const state = useContext(UserStateContext);
-  const _token = state.token;
   const publicprofile= "/user/" + profileid;
 
   const deleteCard = async (pageId) => {
@@ -143,8 +140,10 @@ const PagesPage = ({ profileid, pages, inbox, pid, creatorid, blocks }) => {
 };
 
 export const getServerSideProps = async (context) => {
+  const myCookies = nookies.get(context)
+  const { token } = myCookies;
+  
   resetServerContext(); // needed for drag and drop functionality
-  const { token } = cookies(context);
   const res = context.res;
   const req = context.req;
 
@@ -161,12 +160,8 @@ export const getServerSideProps = async (context) => {
       `${process.env.NEXT_PUBLIC_API}/pages/${pageId}`,
       {
         method: "GET",
-        credentials: "include",
-        // Forward the authentication cookie to the backend
         headers: {
           "Content-Type": "application/json",
-          "_token": token,
-          // Cookie: req ? req.headers.cookie : undefined,
         },
       }
     );
@@ -174,12 +169,8 @@ export const getServerSideProps = async (context) => {
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_API}/pages`, {
       method: "GET",
-      credentials: "include",
-      // Forward the authentication cookie to the backend
       headers: {
         "Content-Type": "application/json",
-        "_token": token,
-        // Cookie: req ? req.headers.cookie : undefined,
       },
     });
 
@@ -187,11 +178,8 @@ export const getServerSideProps = async (context) => {
       `${process.env.NEXT_PUBLIC_API}/users/account`,
       {
         method: "GET",
-        credentials: "include",
-        // Forward the authentication cookie to the backend
         headers: {
           "Content-Type": "application/json",
-          Cookie: req ? req.headers.cookie : undefined,
         },
       }
     );
@@ -205,12 +193,8 @@ export const getServerSideProps = async (context) => {
           `${process.env.NEXT_PUBLIC_API}/pages/${id}`,
           {
             method: "GET",
-            credentials: "include",
-            // Forward the authentication cookie to the backend
             headers: {
               "Content-Type": "application/json",
-              "_token": token,
-              // Cookie: req ? req.headers.cookie : undefined,
             },
           }
         );

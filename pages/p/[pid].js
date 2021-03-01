@@ -1,5 +1,5 @@
 import { resetServerContext } from "react-beautiful-dnd";
-import cookies from "next-cookies";
+import nookies from 'nookies'
 import * as APIService from "../../services/apis"
 
 import EditablePage from "../../components/editablePage/index";
@@ -9,10 +9,10 @@ const Page = ({ pid, creatorid, blocks, err }) => {
 };
 
 export const getServerSideProps = async (context) => {
+  const myCookies = nookies.get(context)
+  const { token } = myCookies;
   resetServerContext(); // needed for drag and drop functionality
-  const { token } = cookies(context);
   const pageId = context.query.pid;
-  const req = context.req;
   const res = context.res;
   try {
     if ( !pageId ){

@@ -14,11 +14,15 @@ const USERS_ACCOUNT_INBOX   = "users/account/inbox";
 const USERS_LIST            = "users/getUserList";
 const USERS_ACTIVATE        = "users/activate";
 const USERS_LOGOUT          = "users/logout";
+const GOOGLE_LOGIN          = "users/googlogin";
+const RESET_TOKEN           = "users/resetToken";
+const USER_LOGIN            = "users/login";
+const USER_SIGNUP           = "users/signup";
 
 const generateToken = token => ("Bearer " + token)
 const generateHeader = token => token ? ({
   "Content-Type": "application/json",
-  "Access-Control-Allow-Headers": "Content-Type",
+  credentials: "include",
   "Authorization": generateToken(token)
 }) : ({
   "Content-Type": "application/json",
@@ -26,12 +30,10 @@ const generateHeader = token => token ? ({
 const generateRequest = ({token, method, formData}) => {
   return formData ? ({
       method,
-      credentials: "include",
       headers: generateHeader(token ? token : null),
       body: formData
     }) : ({
-      method,
-      credentials: "include",
+      method: method,
       headers: generateHeader(token ? token : null),
     })
 }
@@ -63,14 +65,15 @@ export const PagesPostPage = (token, formData, method) => fetch(
 )
 
 /*---------- APIs for users ------------*/
-export const SaveBioText = (token, formData) => fetch(
+export const SaveBioText = (formData) => {
+  return fetch(
   SERVER_BASE_URL + SAVE_BIO_TEXT,
-  generateRequest({token, method:"POST", formData})
-)
+  generateRequest({method:"POST", formData})
+)}
 
-export const UserFollow = (token, formData) => fetch(
+export const UserFollow = ( formData) => fetch(
   SERVER_BASE_URL + USERS_FOLLOW,
-  generateRequest({token, method:"POST", formData})
+  generateRequest({ method:"POST", formData})
 )
 
 export const GetUserList = (token) => fetch(
@@ -98,7 +101,27 @@ export const UsersActivate = (token, method, formData) => fetch(
   generateRequest({token, method, formData})
 )
 
+export const Googlogin = (method, formData) => fetch(
+  SERVER_BASE_URL + GOOGLE_LOGIN,
+  generateRequest({method, formData})
+)
+
+export const Login = (formData) => fetch(
+  SERVER_BASE_URL + USER_LOGIN,
+  generateRequest({method:"POST", formData})
+)
+
 export const Logout = (token) => fetch(
   SERVER_BASE_URL + USERS_LOGOUT,
   generateRequest({token, method:"POST"})
+)
+
+export const ResetToken = (token, formData) => fetch(
+  SERVER_BASE_URL + RESET_TOKEN,
+  generateRequest({token, method:"POST", formData})
+)
+
+export const UserSignUp = (method, formData) => fetch(
+  SERVER_BASE_URL + USER_SIGNUP,
+  generateRequest({method, formData})
 )
