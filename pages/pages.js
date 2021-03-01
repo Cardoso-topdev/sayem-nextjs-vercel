@@ -1,6 +1,4 @@
 import { useState, useContext } from "react";
-import nookies from 'nookies'
-
 import Card from "../components/card";
 import Button from "../components/button";
 import Notice from "../components/notice";
