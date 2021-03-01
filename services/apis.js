@@ -22,10 +22,12 @@ const USER_SIGNUP           = "users/signup";
 const generateToken = token => ("Bearer " + token)
 const generateHeader = token => token ? ({
   "Content-Type": "application/json",
+        'Accept': 'application/json',
   credentials: "include",
   "Authorization": generateToken(token)
 }) : ({
   "Content-Type": "application/json",
+  'Accept': 'application/json',
 }) 
 const generateRequest = ({token, method, formData}) => {
   return formData ? ({

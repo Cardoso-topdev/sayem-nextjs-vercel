@@ -75,6 +75,7 @@ const SignupPage = () => {
       if (data.errCode) {
         setNotice({ type: "ERROR", message: data.message });
       } else {
+        console.log(data);
         dispatch({ 
           type: "LOGIN", 
           token: data.token, 
@@ -86,7 +87,7 @@ const SignupPage = () => {
           message:
             "Success! Check your inbox to confirm your email. You will now be redirected.",
         });
-        router.push("/" + data.userId);
+        // router.push("/" + data.userId);
       }
     } catch (err) {
       console.log(err);
@@ -122,18 +123,6 @@ const SignupPage = () => {
       <p>Sign up to create private pages that exist forever.</p>
     </>
   );
-};
-
-export const getServerSideProps = (context) => {
-  const myCookies = nookies.get(context)
-  const { token } = myCookies;
-
-  const res = context.res;
-  if (token) {
-    res.writeHead(302, { Location: `/account` });
-    res.end();
-  }
-  return { props: {token} };
 };
 
 export default SignupPage;
