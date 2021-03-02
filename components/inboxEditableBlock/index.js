@@ -144,7 +144,8 @@ class InboxEditableBlock extends React.Component {
 
   async getMetaData(url) {
     try {
-      const response = await APIService.PagesUrl(this.props.token, JSON.stringify({
+      console.log("inboxEditableBlock token : ", this.props.token);
+      const response = await APIService.PagesUrl(JSON.stringify({
         url: url,
       }), "PUT")
       const data = await response.json().then();
@@ -417,9 +418,10 @@ class InboxEditableBlock extends React.Component {
   }
 
   render() {
-
+    console.log("EDITABLE:", this.props.bEditable);
+    const clsName = this.props.bEditable ? "" : styles.userDisable;
     return (
-      <>
+      <div className={clsName}>
         {this.state.tagSelectorMenuOpen && (
           <AddElsewhereMenu
             position={this.state.tagSelectorMenuPosition}
@@ -560,16 +562,16 @@ class InboxEditableBlock extends React.Component {
             
           )}
         </Draggable>
-      </>
+      </div>
     );
   }
 }
 
 export const getServerSideProps = async (context) => {
   const myCookies = nookies.get(context)
-  const { token } = myCookies;
+  const { token, userId } = myCookies;
   return {
-    props: { token }
+    props: { token, userId }
   };
 };
 export default InboxEditableBlock;

@@ -11,7 +11,7 @@ import Header from "../header";
 const Layout = ({ children }) => {
   const router = useRouter();
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
-  const isLoginPage = router.pathname === "/login";
+  const [isLoginPage] = useState(router.pathname === "/login")
 
   const toggleContextMenu = () => {
     setIsContextMenuOpen(!isContextMenuOpen);

@@ -18,7 +18,7 @@ const PagesPage = ({ pages }) => {
       updatedCards.splice(cardIndex, 1);
       setCards(updatedCards);
     } catch (err) {
-      console.log(err);
+      console.log("DELETE CARD ERROR: ", err);
     }
   };
   return (

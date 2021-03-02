@@ -57,14 +57,10 @@ const LoginPage = () => {
     setFormData({ ...formData, [id]: value });
   };
 
-  const clientId =
-  '936739740327-ktpi3gj57iqf7j2se7b2dhuno0vvq1c4.apps.googleusercontent.com';
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENTID;
 
   const onFailure = (res) => {
     console.log('Login failed: res:', res);
-    alert(
-      `This shit aint working`
-    );
   };
 
   const onSuccess = async res => {
@@ -113,7 +109,7 @@ const LoginPage = () => {
       } else {
         dispatch({ 
           type: "LOGIN", 
-          token: token,
+          token: data.token,
           userId: data.userId, 
           userName: data.userName });
         MyCookies.setCookieWithPath(data, "/" + data.userId);

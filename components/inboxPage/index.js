@@ -52,6 +52,9 @@ const InboxPage = ({  pageIdList,
   // const token = state.token;
   const {token, userId} = parseCookies()
 
+  let bEditable = userId == userData._id;
+  console.log(userId, userData._id, bEditable);
+
   const initialPages = filteredPages || [];
   const [cards, setCards] = useState(initialPages.map((data) => data.page));
   const [showInbox, setShowInbox] = useState(true)
@@ -260,6 +263,7 @@ const InboxPage = ({  pageIdList,
                     addBlock={addBlockHandler}
                     deleteBlock={deleteBlockHandler}
                     updateBlock={updateBlockHandler}
+                    bEditable={bEditable}
                   />
                 );
               })}

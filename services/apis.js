@@ -51,9 +51,9 @@ export const GetPages = (token, method, formData = null) => fetch(
   generateRequest({token, method, formData})
 )
 
-export const PagesUrl = (token, formData, method) => fetch(
+export const PagesUrl = (formData, method) => fetch(
   SERVER_BASE_URL + PAGES_URL,
-  generateRequest({token, method, formData})
+  generateRequest({method, formData})
 )
 
 export const PageImgUpload = (formData, pageId) => fetch(

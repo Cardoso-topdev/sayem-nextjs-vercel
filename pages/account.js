@@ -3,6 +3,7 @@ import { useState } from "react";
 import Input from "../components/input";
 import Notice from "../components/notice";
 import * as APIService from "../services/apis";
+import nookies from 'nookies';
 
 const form = {
   id: "signup",
@@ -39,8 +40,8 @@ const AccountPage = ({ user }) => {
   const RESET_NOTICE = { type: "", message: "" };
   const [notice, setNotice] = useState(RESET_NOTICE);
   const values = {
-    [form.inputs[0].id]: user ? user.name : form.inputs[0].value,
-    [form.inputs[1].id]: user ? user.email : form.inputs[1].value,
+    [form.inputs[0].id]: (user && user.name) ? user.name : form.inputs[0].value,
+    [form.inputs[1].id]: (user && user.email) ? user.email : form.inputs[1].value,
     [form.inputs[2].id]: form.inputs[2].value,
   };
   const [formData, setFormData] = useState(values);
@@ -112,12 +113,16 @@ export const getServerSideProps = async (context) => {
   try {
     const response = await APIService.UserAccount(token, "GET")
     const data = await response.json();
-    return {
-      props: { user: { name: data.name, email: data.email, token } },
-    };
+    if ( data && data.name && data.email ){
+      return {
+        props: { user: { name: data.name, email: data.email, token } },
+      };
+    } else {
+      return {props:{ user: {}}};
+    }
   } catch (err) {
-    console.log(err);
-    return { props: {} };
+    console.log("account error: ", err);
+    return { props: { user:{}} };
   }
 };
 
