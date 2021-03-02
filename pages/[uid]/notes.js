@@ -43,7 +43,7 @@ export const getServerSideProps = async (context) => {
         err: false },
     };
   } catch (err) {
-    console.log(err);
+    console.log("NOTES PAGE ERR: ", err);
     return { props: { blocks: null, uid: null, creatorid: null, err: true } };
   }
 };

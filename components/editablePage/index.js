@@ -32,9 +32,9 @@ const EditablePage = ({ id, creatorid, fetchedBlocks, err }) => {
   useEffect(() => {
     const updatePageOnServer = async (blocks) => {
       try {
-        await APIService.PageInfo(id, token, JSON.stringify({
+        await APIService.PageInfo(id, token, "PUT", JSON.stringify({
           blocks: blocks,
-        }), "PUT")
+        }))
       } catch (err) {
         console.log(err);
       }

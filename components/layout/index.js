@@ -1,7 +1,7 @@
 import { useContext, useState } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
-
+import { parseCookies, destroyCookie} from 'nookies'
 import { UserStateContext } from "../../context/UserContext";
 
 import styles from "./styles.module.scss";
@@ -11,7 +11,7 @@ import Header from "../header";
 const Layout = ({ children }) => {
   const router = useRouter();
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
-  const [isLoginPage] = useState(router.pathname === "/login")
+  const {token, userName, userId} = parseCookies();
 
   const toggleContextMenu = () => {
     setIsContextMenuOpen(!isContextMenuOpen);
@@ -34,7 +34,7 @@ const Layout = ({ children }) => {
         <link rel="icon" href="/favicon.ico" type="image/x-icon" />
       </Head>
       <Header 
-          isLoginPage={isLoginPage}
+          userName = {userName}
           isContextMenuOpen={isContextMenuOpen}
           toggleContextMenu={toggleContextMenu} 
           handleNavigation={handleNavigation} 
@@ -44,7 +44,7 @@ const Layout = ({ children }) => {
         <hr className={styles.hr} />
         <div className={styles.github}>
           <a
-            href="https://github.com/sayemmh"
+            href="https://github.com/Cardoso-topdev/sayem-nextjs-vercel"
             rel="noopener noreferrer"
             role="link"
             tabIndex="0"

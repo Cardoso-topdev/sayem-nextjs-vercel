@@ -61,6 +61,17 @@ const NotesPage = ({ filteredPages, fetchedBlocks, err, userData }) => {
   const classes = useStyles();
   const prevBlocks = usePrevious(blocks);
 
+  const deleteCard = async (pageId) => {
+    try {
+      await APIService.PageInfo(pageId, token, "DELETE")
+      const cardIndex = cards.map((page) => page._id).indexOf(pageId);
+      const updatedCards = [...cards];
+      updatedCards.splice(cardIndex, 1);
+      setCards(updatedCards);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   // Update the database whenever blocks change
   useEffect(() => {

@@ -31,7 +31,7 @@ const Card = ({ pageId, date, content, deleteCard, userData }) => {
 
   const {token, userId} = parseCookies()
   
-  let bEditable = userId == userData._id;
+  let bEditable = userData ? (userId == userData._id) : true;
 
   // In the card preview, we only want to show textual content
   const textContent = content.filter((block) => block.tag !== "img");

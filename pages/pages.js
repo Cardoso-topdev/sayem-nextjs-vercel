@@ -5,8 +5,11 @@ import Notice from "../components/notice";
 import { UserStateContext } from "../context/UserContext";
 import * as APIService from "../services/apis"
 import nookies from 'nookies'
+import { parseCookies} from 'nookies'
 
 const PagesPage = ({ pages }) => {
+  const {token} = parseCookies()
+  console.log(token);
   const initialPages = pages || [];
   const [cards, setCards] = useState(initialPages.map((data) => data.page));
 
@@ -55,7 +58,7 @@ const PagesPage = ({ pages }) => {
 export const getServerSideProps = async (context) => {
   const myCookies = nookies.get(context)
   const { token } = myCookies;
-
+  console.log("pages serverside token: ", token)
   const res = context.res;
 
   if (!token) {
@@ -75,7 +78,7 @@ export const getServerSideProps = async (context) => {
       })
     );
     const filteredPages = pages.filter((page) => !page.errCode);
-    return { props: { pages: filteredPages } };
+    return { props: { pages: filteredPages} };
   } catch (err) {
     console.log(err);
     return { props: {} };

@@ -10,16 +10,17 @@ import { useRouter } from "next/router";
 import * as APIService from "../../services/apis";
 import * as MyCookies from "../../services/manage_cookie";
 
-const Header = ({isLoginPage, isContextMenuOpen, toggleContextMenu, handleNavigation, closeContextMenu}) => {
+const Header = ({userName, isContextMenuOpen, toggleContextMenu, handleNavigation, closeContextMenu}) => {
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENTID;
   const dispatch = useContext(UserDispatchContext);
   // const {token, userName} = useContext(UserStateContext);
-  const {token, userName, userId} = parseCookies();
-  const [hUserName] = useState(userName);
+  const {token, userId} = parseCookies();
   const [hToken] = useState(token);
   const [hUserId] = useState(userId);
   console.log("Header: ", userName);
   const router = useRouter();
+  const isLoginPage = router.pathname === "/login";
+  console.log("isLoginPage: ", isLoginPage, router.pathname)
 
   const onFailure = () => {
     console.log('Handle failure cases');
@@ -70,10 +71,10 @@ const Header = ({isLoginPage, isContextMenuOpen, toggleContextMenu, handleNaviga
       </div>
       <nav className={styles.nav}>
         {!isLoginPage && <> 
-          {hToken ? 
+          {userName ? 
             <div>
               <div className={styles.user}>
-                <p>{hUserName}</p>
+                <p>{userName}</p>
                 <span
                   role="button"
                   tabIndex="0"
