@@ -1,6 +1,65 @@
 # sayem-nextjs-vercel Frontend
 
-  [Live Demo](https://sayem-nextjs-vercel.vercel.app/)
+  [Live Demo](https://sayem-nextjs-vercel.vercel.app/) <br />
+  
+  The frontend is built with Next.js and fully server-side rendered. On the backend, a REST API handles saving user content and user management.
+
+#### Frontend
+
+Next.js · React.js · SCSS/SASS
+
+#### Backend
+
+Express.js · MongoDB with Mongoose · Nodemailer · JWT (Cookie-based)
+
+## Installation
+
+1. **Clone the project**
+
+   ```sh
+    git clone https://github.com/konstantinmuenster/notion-clone.git
+    cd notion-clone
+   ```
+   
+2. **Add environment variables**
+
+   Backend: Create an `.env` file in the `backend` directory:
+
+   ```
+   FRONTEND_URL="http://localhost:3000"
+   DOMAIN="localhost"
+   JWT_KEY="yourSecretForTokenGeneration"
+   PORT=8080
+   MONGO_URI="mongodb+srv://username:password@cluster.gqqwp.gcp.mongodb.net/database?retryWrites=true&w=majority"
+   MAIL_HOST="smtp.sendgrid.net"
+   MAIL_PORT=465
+   MAIL_USER="apiKey"
+   MAIL_SENDER="Your Name <your@mail.com>"
+   MAIL_PASSWORD="yourSendGridApiKey"
+   ```
+
+   Frontend: Create an `.env.local` file in the `frontend` directory:
+
+   ```
+   NEXT_PUBLIC_API="http://localhost:8080"
+   ```
+
+3. **Install and run backend (http://localhost:8080)**
+
+    ```sh
+    cd backend
+    npm install
+    npm start
+    ```
+
+4. **Install and run frontend (http://localhost:3000)**
+
+    ```sh
+    cd frontend
+    npm install
+    npm run dev
+    ```
+    
   ## Deploy on Vercel.com
   ### - Sign up on Vercel.com
   ### - New Project
